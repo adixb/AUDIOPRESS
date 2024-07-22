@@ -34,6 +34,9 @@ function LoginDashBoard() {
   const [bookmarks,SetBookmarks]=useState(false) ; 
   const [showFeed,setShowFeed]=useState(true) ; 
   const [newsHeadLines,setNewsHeadLines]=useState('');
+  const [isVoiceAssistant,setIsVoiceAssistant]=useState(false) ; 
+  
+
 
   const clickOutsideRef = useRef(null);
   const navigate = useNavigate();
@@ -454,7 +457,7 @@ console.log(`Language set to: ${languages[languageCode]}`);
         <div className='news-container explore-scroll-container h-full overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
             {newsData.length ? (
                 newsData.map((news, index) => (
-                    <div key={index} className='news-item p-4 border rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 cursor-pointer'
+                    <div key={index} className='news-item p-4 border rounded-lg shadow-lg hover:shadow-xl  cursor-pointer'
                         onClick={() => handleShowNewsModal(news)}
                     >
                         {news.urlToImage && (
@@ -479,7 +482,7 @@ const RenderBookmark=({newsData})=>{
                 <p className='text-2xl font-bold'>No Bookmarks Added...</p>
             ) : (
               Allbookmarks.map((news, index) => (
-                    <div key={index} className='news-item p-4 border rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 cursor-pointer'
+                    <div key={index} className='news-item p-4 border rounded-lg shadow-lg hover:shadow-xl  cursor-pointer'
                         onClick={() => handleShowNewsModal(news)}
                     >
                         {news.urlToImage && (
@@ -496,9 +499,6 @@ const RenderBookmark=({newsData})=>{
 }
 
 let recognition;
-let isVoiceAssistant = false ; 
-
-
 
 const startVoiceAssistant = (newsHeadlines) => {
   recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -526,7 +526,7 @@ const startVoiceAssistant = (newsHeadlines) => {
 
   try {
     recognition.start();
-    isVoiceAssistant = true;
+   
     console.log('Speech recognition started.');
   } catch (error) {
     console.error('Error starting speech recognition:', error);
@@ -543,19 +543,27 @@ const speakResponse = (text) => {
 const stopVoiceAssistant = () => {
   if (recognition && isVoiceAssistant) {
     recognition.stop();
-    isVoiceAssistant = false;
+    
     console.log("Speech recognition stopped.");
+   
   }
   window.speechSynthesis.cancel();
   console.log('Speech synthesis stopped.');
+  setIsVoiceAssistant(false)
+ 
+
+  
 };
 
 const triggerVoiceAssistant = () => {
   if (newsHeadLines) {
     startVoiceAssistant(newsHeadLines);
+    setIsVoiceAssistant(true)
   } else {
     console.error('No news headlines available to speak.');
   }
+  
+
 };
 
 
@@ -637,17 +645,29 @@ const RenderSideBar = () => {
             {isVoiceAssistant ? (
         <li className='flex items-center mx-4'>
           <MdMicOff className='mr-2 w-12 h-12 hover:text-blue-300 cursor-pointer' onClick={stopVoiceAssistant} />
-          Turn Off Voice Assistant
+          Turn off Voice Assistant 
         </li>
       ) : (
         <li className='flex items-center mx-4'>
           <MdKeyboardVoice className='mr-2 w-12 h-12 hover:text-blue-300 cursor-pointer' onClick={triggerVoiceAssistant} />
-          Turn On Voice Assistant
+          Turn on Voice Assistant 
         </li>
       )}
           </div>
           <div className='w-2/4 border-b border-gray-300 my-5'></div>
-          {showExplore ? <RenderExplore newsData={newsData}/>  : bookmarks?<RenderBookmark/> : <img src={NewsImage} alt="dashboard image" className='w-2/4 h-4/5 mb-8' />}
+          {showExplore ? <RenderExplore newsData={newsData}/>  : bookmarks?<RenderBookmark/> : (
+            <div className=' flex flex-col items-center justify-start'>
+              <div className="border shadow-xl rounded-lg p-2 flex flex-col items-start">
+                <strong> Voice Commands :</strong>
+                <p className='font-semibold'>Read !</p>
+                <p className='font-semibold'>Read Me the News !</p>
+                <p className='font-semibold'>Read the Top HeadLines !</p>
+              </div>
+
+              <img src={NewsImage} alt="dashboard image" className='w-[40dvw] h-[60dvh] mb-8' />
+              
+            </div>
+          )}
         </div>
         {RenderNewsModal()}
         

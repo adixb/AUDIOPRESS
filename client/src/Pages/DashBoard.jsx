@@ -167,7 +167,7 @@ function DashBoard() {
       <div className='news-container explore-scroll-container h-full overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {newsData.length ? (
           newsData.map((news, index) => (
-            <div key={index} className='news-item p-4 border rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 cursor-pointer'
+            <div key={index} className='news-item p-4 border rounded-lg shadow-lg hover:shadow-xl  cursor-pointer'
               onClick={() => handleShowNewsModal(news)}
             >
               {news.urlToImage && (
