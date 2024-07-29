@@ -35,6 +35,7 @@ function LoginDashBoard() {
   const [showFeed,setShowFeed]=useState(true) ; 
   const [newsHeadLines,setNewsHeadLines]=useState('');
   const [isVoiceAssistant,setIsVoiceAssistant]=useState(false) ; 
+  const[selectedLanguage,setSelectedLanguage] = useState('en-US')
   
 
 
@@ -378,7 +379,7 @@ function LoginDashBoard() {
   };
 
   // fetching news 
-  let selectedLanguage = 'en-US'; 
+
   const languages = {
     'en-US':'English(United States)',
     'en-AU' : 'English (Australia)',
@@ -399,7 +400,7 @@ const languageMap={
 }
 
 const languageCode = languageMap[countryCode.toLowerCase()] || 'en-US' ; 
-selectedLanguage=languageCode;
+setSelectedLanguage(languageCode)
 console.log(`Language set to: ${languages[languageCode]}`);
   }
   
@@ -407,6 +408,8 @@ console.log(`Language set to: ${languages[languageCode]}`);
   const fetchNews = useCallback(async () => {
     if (filterCountry && filterCategory) {
       try {
+        setLanguage(filterCountry)
+        console.log(filterCountry)
         const response = await axios.post('http://localhost:5000/api/news/getNews', {
           filterCategory,
           filterCountry,
@@ -415,7 +418,7 @@ console.log(`Language set to: ${languages[languageCode]}`);
         const headlines = articles.map(article=>article.title).join('.')
         setNewsData(Array.isArray(articles) ? articles : []);
         setNewsHeadLines(headlines)
-        setLanguage(filterCountry)
+       
       } catch (error) {
         console.error("Error fetching the news data:", error);
       }
