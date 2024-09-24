@@ -408,31 +408,38 @@ console.log(`Language set to: ${languages[languageCode]}`);
   const fetchNews = useCallback(async () => {
     if (filterCountry && filterCategory) {
       try {
-        setLanguage(filterCountry)
-        console.log(filterCountry)
+        setLanguage(filterCountry);
+        console.log(filterCountry);
         const response = await axios.post('http://localhost:5000/api/news/getNews', {
           filterCategory,
           filterCountry,
         });
-        const articles = response.data.articles || [];
-        const headlines = articles.map(article=>article.title).join('.')
-        setNewsData(Array.isArray(articles) ? articles : []);
-        setNewsHeadLines(headlines)
-       
+  
+        if (response.status === 200 && response.data) {
+          const articles = response.data.articles || [];
+          const headlines = articles.map(article => article.title).join('.');
+          setNewsData(Array.isArray(articles) ? articles : []);
+          setNewsHeadLines(headlines);
+        } else {
+          console.error("Unexpected response format:", response);
+          setNewsData([]); // Clear news if response is unexpected
+        }
       } catch (error) {
         console.error("Error fetching the news data:", error);
+        setNewsData([]); // Clear news on error
       }
     }
   }, [filterCountry, filterCategory]);
-  
   
   useEffect(() => {
     fetchNews();
   }, [fetchNews]);
   
-  
+  // Reset news data when filterCountry or filterCategory changes
   useEffect(() => {
-    setNewsData([]);
+    if (!filterCountry || !filterCategory) {
+      setNewsData([]); // Clear news if filters are not set
+    }
   }, [filterCountry, filterCategory]);
   
   const RenderNewsModal = () => {
@@ -453,30 +460,30 @@ console.log(`Language set to: ${languages[languageCode]}`);
     }
     return null;
   }
-
-
+  
   const RenderExplore = () => {
     return (
-        <div className='news-container explore-scroll-container h-full overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {newsData.length ? (
-                newsData.map((news, index) => (
-                    <div key={index} className='news-item p-4 border rounded-lg shadow-lg hover:shadow-xl  cursor-pointer'
-                        onClick={() => handleShowNewsModal(news)}
-                    >
-                        {news.urlToImage && (
-                            <img src={news.urlToImage} alt={news.title} className='w-full h-48 object-cover mb-4 rounded-lg' />
-                        )}
-                        <h2 className='text-xl font-bold mb-2'>{news.title}</h2>
-                        <a href={news.url} target="_blank" rel="noopener noreferrer" className='text-blue-500 hover:underline'>Read more</a>
-                        <p className='text-black cursor-pointer'><FaBookmark onClick={()=>handleAddtoBookmark(news)}/></p>
-                    </div>
-                ))
-            ) : (
-                <p className='text-center'>No news available. Please select a category and country.</p>
-            )}
-        </div>
+      <div className='news-container explore-scroll-container h-full overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        {newsData.length ? (
+          newsData.map((news, index) => (
+            <div key={index} className='news-item p-4 border rounded-lg shadow-lg hover:shadow-xl cursor-pointer'
+              onClick={() => handleShowNewsModal(news)}
+            >
+              {news.urlToImage && (
+                <img src={news.urlToImage} alt={news.title} className='w-full h-48 object-cover mb-4 rounded-lg' />
+              )}
+              <h2 className='text-xl font-bold mb-2'>{news.title}</h2>
+              <a href={news.url} target="_blank" rel="noopener noreferrer" className='text-blue-500 hover:underline'>Read more</a>
+              <p className='text-black cursor-pointer'><FaBookmark onClick={() => handleAddtoBookmark(news)} /></p>
+            </div>
+          ))
+        ) : (
+          <p className='text-center'>No news available. Please select a category and country.</p>
+        )}
+      </div>
     );
-};
+  };
+  
 
 const RenderBookmark=({newsData})=>{
   return(
