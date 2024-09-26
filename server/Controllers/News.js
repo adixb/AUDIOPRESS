@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 const LRUCache = require('../Utils/LRUCache');
+const axios = require('axios');
 
 dotenv.config();
 
@@ -18,7 +19,7 @@ async function handleFetchNews(req, res) {
     }
 
     try {
-        const response = await fetch(`https://newsapi.org/v2/top-headlines?country=${filterCountry}&category=${filterCategory}&apiKey=${process.env.NEWS_API_KEY}`);
+        const response = await axios.get(`https://newsapi.org/v2/top-headlines?country=${filterCountry}&category=${filterCategory}&apiKey=${process.env.NEWS_API_KEY}`);
 
         if (response.ok) {
             const data = await response.json();

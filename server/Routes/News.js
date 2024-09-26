@@ -6,11 +6,11 @@ const {handleWebhookNews} = require ('../Controllers/News') ;
 const router = express.Router() ; 
 
 
-//GET ROUTES 
+//POST ROUTES 
 router.post('/getNews',handleFetchNews) ; 
 
 
-// POST ROUTES 
+// GET ROUTES 
 
 
 
